@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const ShopContext = createContext(null);
@@ -8,7 +8,7 @@ const useShopData = () => {
   const [cart, setCart] = useState({});
 
   useEffect(() => {
-    const apiUrl = 'https://fakestoreapi.com/products';
+    const apiUrl = 'http://localhost:5000/products';
 
     axios
       .get(apiUrl)
@@ -32,7 +32,7 @@ export const ShopContextProvider = (props) => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = products.find((product) => product.id === Number(item));
+        let itemInfo = products.find((product) => product._id === item);
         totalAmount += cartItems[item] * itemInfo.price;
       }
     }
@@ -52,11 +52,12 @@ export const ShopContextProvider = (props) => {
       [id]: (prev[id] || 0) - 1,
     }));
   };
+
   const checkout = () => {
-    // Call the checkout function when the user wants to checkout
     setCartItems({});
-  }
-  const contextValue = { cartItems, addCart, removeCart, getTotalCartAmount ,checkout};
+  };
+
+  const contextValue = { cartItems, addCart, removeCart, getTotalCartAmount, checkout };
 
   return (
     <ShopContext.Provider value={contextValue}>
