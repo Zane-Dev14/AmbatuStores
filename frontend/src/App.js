@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/navbar';
-import { Shop } from './pages/shop';
+import Shop from './pages/shop'; // Correct the import statement
 import { Cart } from './pages/cart';
 import { SearchProvider } from './components/search';
 import { ShopContextProvider } from './context/context';

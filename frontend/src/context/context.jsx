@@ -3,37 +3,44 @@ import axios from 'axios';
 
 export const ShopContext = createContext(null);
 
-const useShopData = () => {
+export const useShopData = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
 
-  useEffect(() => {
-    const apiUrl = 'http://localhost:5000/products';
+  const fetchProducts = async () => {
+    const apiUrl = 'https://fakestoreapi.com/products';
 
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        const productData = response.data;
-        setProducts(productData);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+    try {
+      const response = await axios.get(apiUrl);
+      const productData = response.data;
+
+      console.log('Received products:', productData); // Log received products
+
+      setProducts(productData); // Update local state with fetched products
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
-  return { products, cart };
+  return { products, cart, setCart, fetchProducts };
 };
 
 export const ShopContextProvider = (props) => {
-  const { products, cart } = useShopData();
-  const [cartItems, setCartItems] = useState(cart);
+  const { products, cart, setCart } = useShopData();
+  const [cartItems, setCartItems] = useState({});
 
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = products.find((product) => product._id === item);
-        totalAmount += cartItems[item] * itemInfo.price;
+        let itemInfo = products.find((product) => product.id === parseInt(item));
+        if (itemInfo) {
+          totalAmount += cartItems[item] * itemInfo.price;
+        }
       }
     }
     return totalAmount;
@@ -57,7 +64,7 @@ export const ShopContextProvider = (props) => {
     setCartItems({});
   };
 
-  const contextValue = { cartItems, addCart, removeCart, getTotalCartAmount, checkout };
+  const contextValue = { cartItems, addCart, removeCart, getTotalCartAmount, checkout, products, setCart };
 
   return (
     <ShopContext.Provider value={contextValue}>

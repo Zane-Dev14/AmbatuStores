@@ -1,24 +1,29 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const Product = require('./models/product');
-const app = express();
-const port = 5000;
+const productRoutes = require('./routes/products');
 
+const app = express();
+const PORT = process.env.PORT || 5000;
+const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb+srv://22cs258:6NxcdL7TmRe8bHgn@cluster0.t6j40rh.mongodb.net/webstore', { useNewUrlParser: true, useUnifiedTopology: true });
-
-app.get('/products', async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/myapp', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
 });
 
-app.post('/products', async (req, res) => {
-  const newProduct = new Product(req.body);
-  await newProduct.save();
-  res.json(newProduct);
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
 });
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Routes
+app.use(productRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

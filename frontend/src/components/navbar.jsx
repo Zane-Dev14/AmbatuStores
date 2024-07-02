@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart } from 'phosphor-react';
 import SearchBar from './searchbar';
-import { SearchProvider, useSearch, SearchContext } from './search'; // Import the context
+import { SearchContext } from './search'; // Import the context
 
 import './n.css';
 
